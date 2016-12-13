@@ -30,33 +30,46 @@ function blooom_dcodes(){
 		",
 		""
 	));
-	// If the database query returns a dcode defined for the current post and the cookie is not already set
-	if($database_query->meta_value != "" && $database_query->meta_value != NULL){
+	// If the database query returns a dcode defined for the current post
+	if(!isset($_COOKIE["dcode_post_id"]) && $database_query->meta_value != "" && $database_query->meta_value != NULL){
 		// bind the current post's cookie to a variable and write it to the cookie
 		$dcode = $database_query->meta_value;
-		setcookie("dcode",$dcode,0);
+		setcookie("dcode",$dcode,0,'/');
 		// write the current post's post ID to the cookie
-		setcookie("dcode_post_id",$current_post_id,"0");
+		setcookie("dcode_post_id",$current_post_id,0,'/');
 	}
 	// get parameters sans url structure and hash
 	$url_parameters = $_SERVER['QUERY_STRING'];
 	// 
-	if(isset($COOKIE["dcode"])){
-		//add_action('pre_get_posts','alter_query');
+	if(is_front_page()){
+		add_action('pre_get_posts','alter_query');
 	}else{
 	}
 
-	/* Proper way to enqueue scripts */
-	function add_scripts(){
-	    // Register and Enqueue the Link-Handling Script
-	    wp_register_script('relinker', plugins_url('relinker.js', __FILE__ ), array('jquery'), null, true);
-	    wp_enqueue_script('relinker');
-	}
-	add_action('wp_enqueue_scripts', 'add_scripts');
 }
-
-
-
+function alter_query($query) {
+	//gets the global query var object
+	global $wp_query;
+ 
+	//gets the front page id set in options
+	$front_page_id = get_option('page_on_front');
+ 
+	if ( 'page' != get_option('show_on_front') || $front_page_id != $wp_query->query_vars['page_id'] )
+		return;
+ 
+	if ( !$query->is_main_query() )
+		return;
+	if( !isset($_COOKIE['dcode_post_id']))
+		return;
+ 	$dcode_post_id = $_COOKIE["dcode_post_id"];
+	$query-> set('post_type' ,'page');
+	$query-> set('orderby' ,'post__in');
+	$query-> set('p' , null);
+	$query-> set( 'page_id' , $dcode_post_id);
+ 
+	//we remove the actions hooked on the '__after_loop' (post navigation)
+	remove_all_actions ( '__after_loop');
+}
 function adjust_blooom_theme(){
 	// declare wordpress database as global variable
 	global $wpdb;
@@ -87,6 +100,13 @@ function adjust_blooom_theme(){
 	}
 }
 
+/* Proper way to enqueue scripts */
+function add_scripts(){
+    // Register and Enqueue the Link-Handling Script
+    wp_register_script('relinker', plugins_url('relinker.js', __FILE__ ), array('jquery'), null, true);
+    wp_enqueue_script('relinker');
+}
+
 function curPageURL() {
 	$pageURL = 'http';
 	if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
@@ -102,6 +122,8 @@ function curPageURL() {
 // run functions when WordPress runs wp_head()
 add_action( 'wp_head', 'adjust_blooom_theme');
 add_action( 'wp', 'blooom_dcodes');
+add_action('wp_enqueue_scripts', 'add_scripts');
+add_action('pre_get_posts','alter_query');
 
 
 function dev_alert($message) {

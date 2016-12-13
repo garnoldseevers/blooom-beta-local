@@ -1,3 +1,4 @@
+<?php
 function alter_query(){
 	//gets the global query var object
 	global $wp_query;
@@ -106,3 +107,4 @@ function posts_orderby_statement($orderby) {
 	}
 	dev_alert("success");
 }
+?>
