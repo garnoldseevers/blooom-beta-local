@@ -1,0 +1,30 @@
+-----------------------------------------------------------
+
+Version 1.0
+
+    - Initial Release
+
+Version 2.0
+
+    - Major Update
+    - New options Framework ( Titan Framework )
+    - Fremius Framework
+
+Version 2.1
+
+    - Css Nav Issue fix
+    - Include Fremius has plugin author
+    - Fix uninstall hook
+
+Version 2.2
+
+    - New field to specific and alternative URL for the logo link
+    - Css Fixes
+    - Changed Icon prefixing to avoid conflicts
+    - Fixed Fatal error in mob menu.php
+
+ 
+
+
+-----------------------------------------------------------
+

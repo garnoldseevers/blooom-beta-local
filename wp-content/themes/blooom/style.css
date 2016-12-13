@@ -1,0 +1,60 @@
+/*
+Theme Name:     Blooom
+Description:    Child theme for Blooom
+Author:         blackwell
+Template:       Divi
+
+(optional values you can add: Theme URI, Author URI, Version, License, License URI, Tags, Text Domain)
+*/
+
+
+/* video cuts off the top of the laptop screen on home page */
+
+.et_pb_video_0 .et_pb_video_box {
+    padding-top: 20px!important ;
+}
+
+
+
+/*Styling the boxes for the "Costs" section on the homepage */
+span.free-tall {
+    font-family: 'open sans condensed'!important;
+    font-size: 100px!important;
+}
+span.analysis-small {
+    font-family: 'open sans condensed'!important;
+    font-size: 50px!important;
+    line-height: 1px!important;
+}
+.brownblurb {
+    padding-bottom: 5px!important;
+}
+.brownblurbcost {
+    font-family: 'open sans condensed'!important;
+    font-size: 160px!important;
+    padding-top: 40px!important;
+    padding-bottom: 80px!important;
+}
+.brownblurbtitle {
+    font-family: 'open sans condensed'!important;
+    padding-top: 20px!important;
+    padding-bottom: 60px!important;
+}
+sup.dollar-sign {
+    font-size: 80px!important;
+    position: relative!important;
+    top: -40px!important;
+    vertical-align: top!important;
+}
+.cost-button {
+    font-family: 'open sans condensed';
+    font-weight: 500!important;
+    font-size: 30px!important;
+    line-height: 28px!important;
+    padding-left: 0px!important;
+    padding-right: 0px!important;
+    margin-bottom: 20px!important;
+}
+.brownblurbsub {
+    font-size: 20px!important;
+}

@@ -1,0 +1,56 @@
+// Widget Styles
+div[id*="_carousel_slider"] .widget-top{
+    background: #ddffff !important;
+    border: 1px solid #2196f3 !important;
+
+    &:hover {
+	    background: #ffdddd !important;
+	    border: 1px solid #f44336 !important;
+    }
+}
+
+.wpdh-gallery-thumbs{
+	display: block;
+	margin: 15px 0;
+	&:before,
+	&:after {
+		display: table;
+		content: "";
+	}
+	&:after {
+		clear: both;
+	}
+
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		display: inline-block;
+		margin: 0 10px 10px 0;
+
+		img {
+			display: block;
+		}
+	}
+}
+
+.carousel-thumbs {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	li {
+		float: left;
+		display: inline;
+		margin: 0;
+		padding: 0;
+
+		img {
+			display: block;
+			margin: 0 5px 5px 0;
+		}
+	}
+}

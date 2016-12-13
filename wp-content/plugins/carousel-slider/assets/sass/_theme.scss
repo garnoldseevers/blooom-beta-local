@@ -1,0 +1,132 @@
+.carousel-slider {
+    position: relative;
+    
+    // Styling Next and Prev buttons
+    .owl-nav {
+        [class*='owl-'] {
+            background-image: url( $nav-arrows-url );
+            background-color: $background-color;
+            // background-color: #4dc7a0;
+            display: inline-block;
+            text-indent: -1e+7px;
+            height: 25px;
+            width: 25px;
+            border-radius: 25px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+            transition:all .3s ease-in-out;
+
+            &:hover {
+                background-color: $background-hover-color;
+            }
+            &:first-child {
+                background-position: 0 45px;
+                margin-right: 3px;
+                left: -30px;
+            }
+            &:last-child {
+                background-position: 2px 2px;
+                margin-left: 3px;
+                right: -30px;
+            }
+            &:first-child:hover {
+                background-position: 0 24px;
+            }
+            &:last-child:hover {
+                background-position: 2px -20px;
+            }
+        }
+
+        .disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+    }
+
+    // Styling dots
+    .owl-dots {
+        text-align: center;
+        -webkit-tap-highlight-color: transparent;
+        margin-top: 10px;
+
+        .owl-dot {
+            display: inline-block;
+            zoom: 1;
+            *display: inline;
+
+            span {
+                width: 10px;
+                height: 10px;
+                margin: 4px 8px;
+                background-color: $background-color;
+                display: block;
+                -webkit-backface-visibility: visible;
+                transition: opacity 200ms ease;
+                border-radius: 30px;
+            }
+
+            &.active,
+            &:hover {
+                span {
+                    background-color: $background-hover-color;
+                }
+            }
+        }
+    }
+
+    // Styling item
+    .carousel-slider__item {
+        position: relative;
+
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%;
+            height: auto;
+        }
+    }
+    .carousel-slider__caption {
+        position: relative;
+
+        .title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #474747;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 10px 0 0;
+            text-align: center;
+        }
+
+        .caption {
+            font-size: 14px;
+            font-weight: 300;
+            margin: 10px 0 0;
+            text-align: center;
+        }
+    }
+
+    &:hover {
+        .owl-nav {
+            [class*='owl-'] {
+                opacity: 1;
+            }
+        }
+    }
+
+    @media ( max-width: 767px ) {
+        &:hover {
+            .sp-theme .owl-nav {
+                display : none;
+            }
+        }
+        .sp-theme .owl-nav {
+            display : none;
+        }
+    }
+}
