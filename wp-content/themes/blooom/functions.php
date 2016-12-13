@@ -62,7 +62,7 @@ function add_dcode_to_cookie(){
 		""
 	));
 	// If the database query returns a dcode defined for the current post
-	if(!isset($_COOKIE["dcode_post_id"]) && $database_query->meta_value != "" && $database_query->meta_value != NULL){
+	if($database_query->meta_value != "" && $database_query->meta_value != NULL){
 		// bind the current post's cookie to a variable and write it to the cookie
 		$dcode = $database_query->meta_value;
 		setcookie("dcode",$dcode,0,'/');
