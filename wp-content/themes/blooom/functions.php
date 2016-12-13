@@ -65,9 +65,23 @@ function add_dcode_to_cookie(){
 	if($database_query->meta_value != "" && $database_query->meta_value != NULL){
 		// bind the current post's cookie to a variable and write it to the cookie
 		$dcode = $database_query->meta_value;
-		setcookie("dcode",$dcode,0,'/');
+		/*
+
+		
+		ERROR: adding "/" path argument to setcookie(), resolves duplicate cookie issue but results in cookie not being set on first page load
+		
+		One, potentially hacky, workaround is to manually set the cookie on the next line after setcookie() function ala:
+		$_COOKIE["dcode"] = $dcode;
+
+		The fancy way would be AJAX?
+
+		Another is to create a refresh if there is no cookie, but I HATE that idea...
+
+		*/
+		$_COOKIE["dcode"] = $dcode;
+		setcookie("dcode",$dcode,time()+86400*30,"/");
 		// write the current post's post ID to the cookie
-		setcookie("dcode_post_id",$current_post_id,0,'/');
+		setcookie("dcode_post_id",$current_post_id,time()+86400*30,"/");
 	}
 	// 
 
@@ -145,8 +159,8 @@ function curPageURL() {
 // WordPress Hooksadd_dcode_to_secure_links
 add_action('pre_get_posts','alter_homepage_query_with_dcode');
 add_action( 'wp', 'add_dcode_to_cookie');
-add_action( 'wp_head', 'add_styles_conditionally');
 add_action( 'wp_head', 'add_dcode_to_secure_links');
+add_action( 'wp_head', 'add_styles_conditionally');
 //add_action('wp_enqueue_scripts', 'add_scripts');
 
 
