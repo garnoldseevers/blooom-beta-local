@@ -15,62 +15,8 @@ function theme_enqueue_styles() {
 // Your code goes below
 //
 
-function blooom_dcodes(){
-	// declare wordpress database as global variable
-	global $wpdb;
-	// bind the current post's ID to a variable 
-	$current_post_id = get_the_ID();
-	// query database for dcode custom field value and bind result to variable using wpdb->prepare in order to prevent sql injection
-	$database_query = $wpdb->get_row($wpdb->prepare(
-		"
-		SELECT * 
-		FROM $wpdb->postmeta 
-		WHERE post_id = $current_post_id 
-			AND meta_key = 'dcode'
-		",
-		""
-	));
-	// If the database query returns a dcode defined for the current post
-	if(!isset($_COOKIE["dcode_post_id"]) && $database_query->meta_value != "" && $database_query->meta_value != NULL){
-		// bind the current post's cookie to a variable and write it to the cookie
-		$dcode = $database_query->meta_value;
-		setcookie("dcode",$dcode,0,'/');
-		// write the current post's post ID to the cookie
-		setcookie("dcode_post_id",$current_post_id,0,'/');
-	}
-	// get parameters sans url structure and hash
-	$url_parameters = $_SERVER['QUERY_STRING'];
-	// 
-	if(is_front_page()){
-		add_action('pre_get_posts','alter_query');
-	}else{
-	}
-
-}
-function alter_query($query) {
-	//gets the global query var object
-	global $wp_query;
- 
-	//gets the front page id set in options
-	$front_page_id = get_option('page_on_front');
- 
-	if ( 'page' != get_option('show_on_front') || $front_page_id != $wp_query->query_vars['page_id'] )
-		return;
- 
-	if ( !$query->is_main_query() )
-		return;
-	if( !isset($_COOKIE['dcode_post_id']))
-		return;
- 	$dcode_post_id = $_COOKIE["dcode_post_id"];
-	$query-> set('post_type' ,'page');
-	$query-> set('orderby' ,'post__in');
-	$query-> set('p' , null);
-	$query-> set( 'page_id' , $dcode_post_id);
- 
-	//we remove the actions hooked on the '__after_loop' (post navigation)
-	remove_all_actions ( '__after_loop');
-}
-function adjust_blooom_theme(){
+// add styles to theme conditionally based on custom fields
+function add_styles_conditionally(){
 	// declare wordpress database as global variable
 	global $wpdb;
 	// bind the current post's ID to a variable
@@ -99,7 +45,62 @@ function adjust_blooom_theme(){
 		<?php
 	}
 }
+// Bind Dcodes to cookie
+function add_dcode_to_cookie(){
+	// declare wordpress database as global variable
+	global $wpdb;
+	// bind the current post's ID to a variable 
+	$current_post_id = get_the_ID();
+	// query database for dcode custom field value and bind result to variable using wpdb->prepare in order to prevent sql injection
+	$database_query = $wpdb->get_row($wpdb->prepare(
+		"
+		SELECT * 
+		FROM $wpdb->postmeta 
+		WHERE post_id = $current_post_id 
+			AND meta_key = 'dcode'
+		",
+		""
+	));
+	// If the database query returns a dcode defined for the current post
+	if(!isset($_COOKIE["dcode_post_id"]) && $database_query->meta_value != "" && $database_query->meta_value != NULL){
+		// bind the current post's cookie to a variable and write it to the cookie
+		$dcode = $database_query->meta_value;
+		setcookie("dcode",$dcode,0,'/');
+		// write the current post's post ID to the cookie
+		setcookie("dcode_post_id",$current_post_id,0,'/');
+	}
+	// get parameters sans url structure and hash
+	$url_parameters = $_SERVER['QUERY_STRING'];
+	// 
 
+}
+function alter_homepage_query_with_dcode($query) {
+	//gets the global query var object
+	global $wp_query;
+ 
+	//gets the front page id set in options
+	$front_page_id = get_option('page_on_front');
+ 
+	if ( 'page' != get_option('show_on_front') || $front_page_id != $wp_query->query_vars['page_id'] )
+		return;
+ 
+	if ( !$query->is_main_query() )
+		return;
+	if( !isset($_COOKIE['dcode_post_id']))
+		return;
+ 	$dcode_post_id = $_COOKIE["dcode_post_id"];
+ 	/* GARY - Note to Self: Consider these options in the chace that we ever want Dcodes for posts
+	$query-> set('post_type' ,'any');
+	$query-> set('p' , $dcode_post_id);
+ 	*/
+	$query-> set('post_type' ,'page');
+	$query-> set('orderby' ,'post__in');
+	$query-> set('p' , null);
+	$query-> set( 'page_id' , $dcode_post_id);
+ 
+	//we remove the actions hooked on the '__after_loop' (post navigation)
+	remove_all_actions ( '__after_loop');
+}
 /* Proper way to enqueue scripts */
 function add_scripts(){
     // Register and Enqueue the Link-Handling Script
@@ -119,11 +120,19 @@ function curPageURL() {
 	return $pageURL;
 }
 
-// run functions when WordPress runs wp_head()
-add_action( 'wp_head', 'adjust_blooom_theme');
-add_action( 'wp', 'blooom_dcodes');
+// WordPress Hooks
+add_action('pre_get_posts','alter_homepage_query_with_dcode');
+add_action( 'wp', 'add_dcode_to_cookie');
+add_action( 'wp_head', 'add_styles_conditionally');
 add_action('wp_enqueue_scripts', 'add_scripts');
-add_action('pre_get_posts','alter_query');
+
+
+
+
+
+
+
+
 
 
 function dev_alert($message) {
@@ -133,6 +142,4 @@ function dev_alert($message) {
 	</script>
 	<?php
 }
-
-
 ?>
