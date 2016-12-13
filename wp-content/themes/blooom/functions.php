@@ -69,8 +69,6 @@ function add_dcode_to_cookie(){
 		// write the current post's post ID to the cookie
 		setcookie("dcode_post_id",$current_post_id,0,'/');
 	}
-	// get parameters sans url structure and hash
-	$url_parameters = $_SERVER['QUERY_STRING'];
 	// 
 
 }
@@ -101,6 +99,30 @@ function alter_homepage_query_with_dcode($query) {
 	//we remove the actions hooked on the '__after_loop' (post navigation)
 	remove_all_actions ( '__after_loop');
 }
+// Add dcode to all secure.blooom links
+function add_dcode_to_secure_links(){
+	if(isset( $_COOKIE['dcode'] )){
+		?>
+		<script type="text/javascript">
+			var $j = jQuery.noConflict();
+			$d_code = "<?php echo $_COOKIE['dcode']; ?>";
+			$url_parameters = "<?php echo $_SERVER['QUERY_STRING']; ?>";
+			$custom_signup_url = "https://secure.blooom.com/<?php echo $_COOKIE['dcode']; ?>";
+			<?php 
+				if(isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != ""){
+					?>
+					$custom_signup_url = $custom_signup_url + "?" + "<?php echo $_SERVER['QUERY_STRING']; ?>";
+					<?php
+				}
+			?>
+			$j(document).ready(function(){
+				$j("a[href^='https://secure.blooom.com/'], a[href^='https://secure.blooom.com']").attr('href',$custom_signup_url);
+			});
+		</script>
+
+		<?php
+	}
+}
 /* Proper way to enqueue scripts */
 function add_scripts(){
     // Register and Enqueue the Link-Handling Script
@@ -120,11 +142,12 @@ function curPageURL() {
 	return $pageURL;
 }
 
-// WordPress Hooks
+// WordPress Hooksadd_dcode_to_secure_links
 add_action('pre_get_posts','alter_homepage_query_with_dcode');
 add_action( 'wp', 'add_dcode_to_cookie');
 add_action( 'wp_head', 'add_styles_conditionally');
-add_action('wp_enqueue_scripts', 'add_scripts');
+add_action( 'wp_head', 'add_dcode_to_secure_links');
+//add_action('wp_enqueue_scripts', 'add_scripts');
 
 
 
