@@ -58,3 +58,81 @@ sup.dollar-sign {
 .brownblurbsub {
     font-size: 20px!important;
 }
+
+.roundededges{
+    border-radius: 10px !important;
+}
+
+/* 
+--------------------------------
+    blooom edits 
+--------------------------------
+*/
+
+/* Mastheads */
+.et-pb-active-slide .et_pb_slide_description {
+ animation-name: none;
+}
+
+.blm-section-masthead .et_pb_slide_description{
+    padding: 8% 2%;
+}
+.blm-section-masthead h1,
+.blm-section-masthead h2,
+.blm-section-masthead h3,
+.blm-section-masthead h4,
+.blm-section-masthead h5,
+.blm-section-masthead h6,
+.blm-section-masthead p,
+.blm-section-masthead span,
+.blm-section-masthead a{
+}
+.blm-section-masthead h1{
+    font-size: 60px;
+    font-weight: 600;
+}
+.blm-section-masthead h2{
+    font-size: 40px;
+}
+
+.blm-button-start-now{
+    /* placeholder */
+}
+
+/* B2B Mastheads */
+.blm-section-masthead.blm-b2b img[src*="b2b-logo"]{
+    max-width: 250px;
+}
+
+/* Mobile Header Issue Fixes */
+@media screen and (min-width: 1055px) and (max-width: 1194px) {
+    #top-menu{
+        width: auto;
+    }
+    #top-menu .menu-item{
+        text-align: right;
+        padding-right: 0px;
+        padding-left: 10px;
+    }
+    #top-menu .menu-item:last-child{
+        padding-left: 0px;
+    }
+}
+@media screen and (min-width: 1025px) and (max-width: 1054px) {
+    #top-menu{
+        width: 500px;
+    }
+    #top-menu .menu-item{
+        text-align: right;
+        padding-right: 0px;
+        padding-left: 10px;
+    }
+    #top-menu .menu-item:last-child{
+        padding-left: 0px;
+    }
+}
+@media screen and (min-width: 981px) and (max-width: 1024px) {
+    #main-header{
+        display: none;
+    }
+}

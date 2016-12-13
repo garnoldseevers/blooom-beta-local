@@ -30,38 +30,11 @@
 	<script type="text/javascript">
 		document.documentElement.className = 'js';
 	</script>
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+
 	<?php wp_head(); ?>
-	
-
-
-
-	<?php
-		global $wpdb;
-		// need to find "field_584605bccd128" as _pricing_3 references it
-		$current_post_id = get_the_ID();
-		$pricing_3_value = $wpdb->get_results( 'SELECT * FROM wp_postmeta WHERE post_id = '.$current_post_id.' AND meta_key = pricing_3', OBJECT );
-		if($pricing_3_value == NULL){
-			?>
-			<style type="text/css">
-				.blm-pricing-boxes div.et_pb_column{
-					width: 31% !important;
-				}
-				.blm-pricing-box-4{
-					display: none;
-				}
-			</style>
-			<?php
-		}
-	?>
-
-
-
-
 </head>
 <body <?php body_class(); ?>>
 	<div id="page-container">
-	<?php echo $current_post_id; ?>
 <?php
 	if ( is_page_template( 'page-template-blank.php' ) ) {
 		return;
