@@ -15,13 +15,13 @@ function theme_enqueue_styles() {
 // Your code goes below
 //
 
-// add styles to theme conditionally based on custom fields
+// add styles to theme conditionally based on data in custom fields
 function add_styles_conditionally(){
 	// declare wordpress database as global variable
 	global $wpdb;
-	// bind the current post's ID to a variable
+	// assign the current post's ID to a variable
 	$current_post_id = get_the_ID();
-	// query database for pricing_3 custom field value and bind result to variable using wpdb->prepare in order to prevent sql injection
+	// query database for pricing_3 custom field value and assign result to variable using wpdb->prepare in order to prevent sql injection
 	$database_query = $wpdb->get_row($wpdb->prepare(
 		"
 		SELECT * 
@@ -45,13 +45,13 @@ function add_styles_conditionally(){
 		<?php
 	}
 }
-// Bind Dcodes to cookie
+// Write Dcodes to cookie
 function add_dcode_to_cookie(){
 	// declare wordpress database as global variable
 	global $wpdb;
-	// bind the current post's ID to a variable 
+	// assign the current post's ID to a variable 
 	$current_post_id = get_the_ID();
-	// query database for dcode custom field value and bind result to variable using wpdb->prepare in order to prevent sql injection
+	// query the wordpress database in order to get the value of the dcode custom field for this post and assign the result to a variable. Using wpdb->prepare in order to prevent sql injection.
 	$database_query = $wpdb->get_row($wpdb->prepare(
 		"
 		SELECT * 
@@ -61,13 +61,16 @@ function add_dcode_to_cookie(){
 		",
 		""
 	));
-	// If the database query returns a dcode defined for the current post
-	if(!isset($_COOKIE["dcode_post_id"]) && $database_query->meta_value != "" && $database_query->meta_value != NULL){
-		// bind the current post's cookie to a variable and write it to the cookie
+	// If the meta_value column returned by the database query has content
+	if($database_query->meta_value != "" && $database_query->meta_value != NULL){
+		// assign the current post's dcode to a variable and write it to the cookie
 		$dcode = $database_query->meta_value;
-		setcookie("dcode",$dcode,0,'/');
+		// manually write dcode to cookie so that php can access it before page reload
+		$_COOKIE["dcode"] = $dcode;
+		// properly write dcode to cookie so that it will be set correctly after http request
+		setcookie("dcode",$dcode,time()+86400*30,"/");
 		// write the current post's post ID to the cookie
-		setcookie("dcode_post_id",$current_post_id,0,'/');
+		setcookie("dcode_post_id",$current_post_id,time()+86400*30,"/");
 	}
 	// 
 
@@ -75,19 +78,16 @@ function add_dcode_to_cookie(){
 function alter_homepage_query_with_dcode($query) {
 	//gets the global query var object
 	global $wp_query;
- 
 	//gets the front page id set in options
 	$front_page_id = get_option('page_on_front');
- 
 	if ( 'page' != get_option('show_on_front') || $front_page_id != $wp_query->query_vars['page_id'] )
 		return;
- 
 	if ( !$query->is_main_query() )
 		return;
 	if( !isset($_COOKIE['dcode_post_id']))
 		return;
  	$dcode_post_id = $_COOKIE["dcode_post_id"];
- 	/* GARY - Note to Self: Consider these options in the chace that we ever want Dcodes for posts
+ 	/* Note: Consider these options in the chance that we ever want Dcodes for posts
 	$query-> set('post_type' ,'any');
 	$query-> set('p' , $dcode_post_id);
  	*/
@@ -95,74 +95,57 @@ function alter_homepage_query_with_dcode($query) {
 	$query-> set('orderby' ,'post__in');
 	$query-> set('p' , null);
 	$query-> set( 'page_id' , $dcode_post_id);
- 
-	//we remove the actions hooked on the '__after_loop' (post navigation)
+	// Remove the actions hooked on the '__after_loop' (post navigation)
 	remove_all_actions ( '__after_loop');
 }
+
 // Add dcode to all secure.blooom links
 function add_dcode_to_secure_links(){
+	// if the dcode has been written to the cookie
 	if(isset( $_COOKIE['dcode'] )){
+		//insert javascript
 		?>
 		<script type="text/javascript">
+			// assign new jquery variable to prevent conflict
 			var $j = jQuery.noConflict();
-			$d_code = "<?php echo $_COOKIE['dcode']; ?>";
-			$url_parameters = "<?php echo $_SERVER['QUERY_STRING']; ?>";
-			$custom_signup_url = "https://secure.blooom.com/<?php echo $_COOKIE['dcode']; ?>";
+			// append dcode from cookie to secure.blooom.url and assign to variable
+			$secure_link_with_dcode = "https://secure.blooom.com/<?php echo $_COOKIE['dcode']; ?>";
 			<?php 
+				// if parameters have been passed through the url, append them to the secure_link_with_dcode variable
 				if(isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != ""){
 					?>
-					$custom_signup_url = $custom_signup_url + "?" + "<?php echo $_SERVER['QUERY_STRING']; ?>";
+					$secure_link_with_dcode = $secure_link_with_dcode + "?" + "<?php echo $_SERVER['QUERY_STRING']; ?>";
 					<?php
 				}
 			?>
+			//once document is ready, search DOM for all a tags witha  secure.blooom href and replace href with secure link with dcode
 			$j(document).ready(function(){
-				$j("a[href^='https://secure.blooom.com/'], a[href^='https://secure.blooom.com']").attr('href',$custom_signup_url);
+				$j("a[href^='https://secure.blooom.com/'], a[href^='https://secure.blooom.com']").attr('href',$secure_link_with_dcode);
 			});
 		</script>
 
 		<?php
 	}
 }
-/* Proper way to enqueue scripts */
-function add_scripts(){
-    // Register and Enqueue the Link-Handling Script
-    wp_register_script('relinker', plugins_url('relinker.js', __FILE__ ), array('jquery'), null, true);
-    wp_enqueue_script('relinker');
+
+// Add javascript to hide mobile menu when an internal link is clicked
+function mobmenu_modifications() {
+    wp_enqueue_script( 'mobmenu-modifications', get_stylesheet_directory_uri() . '/mobmenu-modifications.js', array('jquery'), '1.0', true );
 }
 
-function curPageURL() {
-	$pageURL = 'http';
-	if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
-	$pageURL .= "://";
-	if ($_SERVER["SERVER_PORT"] != "80") {
-	$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-	} else {
-	$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-	}
-	return $pageURL;
-}
-
-// WordPress Hooksadd_dcode_to_secure_links
+// WordPress Hooks - call functions at certain points during wordpress load
 add_action('pre_get_posts','alter_homepage_query_with_dcode');
 add_action( 'wp', 'add_dcode_to_cookie');
-add_action( 'wp_head', 'add_styles_conditionally');
 add_action( 'wp_head', 'add_dcode_to_secure_links');
-//add_action('wp_enqueue_scripts', 'add_scripts');
+add_action( 'wp_head', 'add_styles_conditionally');
+add_action('wp_enqueue_scripts', 'mobmenu_modifications', 99999);
 
-
-
-
-
-
-
-
-
-
-function dev_alert($message) {
+function dev_alert($alert_message){
 	?>
 	<script type="text/javascript">
-		alert("<?php echo $message; ?>");
+		alert("<?php echo $alert_message; ?>");
 	</script>
 	<?php
 }
+
 ?>
