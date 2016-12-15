@@ -128,10 +128,24 @@ function add_dcode_to_secure_links(){
 	}
 }
 
+// Add javascript to hide mobile menu when an internal link is clicked
+function mobmenu_modifications() {
+    wp_enqueue_script( 'mobmenu-modifications', get_stylesheet_directory_uri() . '/mobmenu-modifications.js', array('jquery'), '1.0', true );
+}
+
 // WordPress Hooks - call functions at certain points during wordpress load
 add_action('pre_get_posts','alter_homepage_query_with_dcode');
 add_action( 'wp', 'add_dcode_to_cookie');
 add_action( 'wp_head', 'add_dcode_to_secure_links');
 add_action( 'wp_head', 'add_styles_conditionally');
+add_action('wp_enqueue_scripts', 'mobmenu_modifications', 99999);
+
+function dev_alert($alert_message){
+	?>
+	<script type="text/javascript">
+		alert("<?php echo $alert_message; ?>");
+	</script>
+	<?php
+}
 
 ?>
